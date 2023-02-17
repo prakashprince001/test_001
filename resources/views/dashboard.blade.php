@@ -7,6 +7,7 @@
             <div class="card">
                 <div class="card-header">
                     {{ __('Dashboard') }}
+                    <p>Date: <input type="text" id="datepicker"></p>
                     <a href="{{ url('home') }}">
                         <button type="button" class="btn btn-primary pull-right" style="margin-right: 10px;">
                             Back
@@ -76,6 +77,7 @@
     </div>
 </div>
 
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
 <script>
     $(document).ready(function() {
         const APP_URL = "{{ env('APP_URL') }}";
@@ -90,6 +92,9 @@
         $('#product-table').DataTable({
             fixedColumns: true
         });
+
+        // Date picker
+        $( "#datepicker" ).datepicker();
 
         // Delete Product
         $('.deleteProduct').click(function() {

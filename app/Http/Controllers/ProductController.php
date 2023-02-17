@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
+use Carbon\Carbon;
 
 class ProductController extends Controller
 {
@@ -200,8 +201,11 @@ class ProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function dashboard()
+    public function dashboard(Request $request)
     {
+        // $date = $request->date;
+        // $created_at = Carbon::createFromFormat('d/m/Y', $date)->format('Y-m-d H:i:s');
+        // $data['total_user'] = User::whereDate('created_at', '=', $created_at)->count();
         $data = [];
         $data['total_user'] = User::count();
         $data['total_product'] = Product::count();
