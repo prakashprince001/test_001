@@ -6,7 +6,11 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
-                    {{ __('Dashboard') }}
+                    <a href="{{ url('dashboard') }}">
+                        <button type="button" class="btn btn-primary pull-left" style="margin-right: 10px;">
+                            {{ __('Dashboard') }}
+                        </button>
+                    </a>
                     <a href="{{ url('add-product') }}">
                         <button type="button" class="btn btn-primary pull-right" style="margin-right: 10px;">
                             Add Product</button>

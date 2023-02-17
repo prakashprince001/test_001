@@ -30,4 +30,5 @@ Route::get('/product/{id?}', [App\Http\Controllers\ProductController::class, 'sh
 Route::get('/edit-product/{id?}', [App\Http\Controllers\ProductController::class, 'edit']);
 Route::post('/update-product/{id?}', [App\Http\Controllers\ProductController::class, 'update']);
 Route::get('/buy-product/{id?}', [App\Http\Controllers\ProductController::class, 'buyProduct']);
+Route::get('/dashboard', [App\Http\Controllers\ProductController::class, 'dashboard']);
 

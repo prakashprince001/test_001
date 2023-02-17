@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Validator;
 use App\Models\Product;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
 class ProductController extends Controller
@@ -191,5 +193,20 @@ class ProductController extends Controller
             Session::flash('status', 'Something wents wrong!');
             return redirect()->back();
         }
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function dashboard()
+    {
+        $data = [];
+        $data['total_user'] = User::count();
+        $data['total_product'] = Product::count();
+        $data['total_inventory'] = Product::sum('quantity');
+        $data['total_product_price'] = Product::sum('price');
+        return view('dashboard', ['data' => $data]);
     }
 }
