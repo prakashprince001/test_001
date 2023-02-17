@@ -55,7 +55,7 @@
                         </div>
                         <div class="form-group">
                             <label for="exampleInputProductPrice">Product Price</label>
-                            <input type="text" class="form-control @error('price') is-invalid @enderror" name="price" id="exampleInputProductPrice" aria-describedby="emailHelp" placeholder="Enter product name">
+                            <input type="number" class="form-control @error('price') is-invalid @enderror" name="price" id="exampleInputProductPrice" aria-describedby="emailHelp" placeholder="Enter product name">
                             @error('price')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
@@ -71,7 +71,7 @@
                                 </span>
                             @enderror                        
                         </div>
-                        <button type="submit" class="btn btn-primary">Add Product</button>
+                        <button type="submit" class="btn btn-primary pull-right">Add Product</button>
                     </form>
                 </div>
             </div>

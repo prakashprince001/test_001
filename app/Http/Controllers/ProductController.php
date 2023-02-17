@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Validator;
 use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
+
 class ProductController extends Controller
 {
     /**
@@ -15,7 +17,8 @@ class ProductController extends Controller
      */
     public function index()
     {
-        //
+        $products = Product::all();
+        return view('welcome', ['products' => $products]);
     }
 
     /**
@@ -48,11 +51,11 @@ class ProductController extends Controller
         if ($request->hasfile('image')) {
             $file = $request->file('image');
             $img_file_name = 'product-image-' . '-' . time() . '.' . $file->extension();
-            $file->move(public_path().'/storage/product-images/', $img_file_name);
+            $file->move(public_path() . '/storage/product-images/', $img_file_name);
         }
 
         $productData = [
-            'name' => Auth::user()->id,
+            'user_id' => Auth::user()->id,
             'name' => $request->name,
             'sku' => $request->sku,
             'description' => $request->description,
@@ -60,9 +63,14 @@ class ProductController extends Controller
             'quantity' => $request->quantity,
             'image' => env('APP_URL') . 'storage/product-images/' . $img_file_name,
         ];
-        Product::create($productData);
-        
-        return redirect('/home');
+        $createProduct = Product::create($productData);
+        if ($createProduct) {
+            Session::flash('status', 'Product Added Successfully!');
+            return redirect('/home');
+        } else {
+            Session::flash('status', 'Something wents wrong!');
+            return redirect()->back();
+        }
     }
 
     /**
@@ -71,9 +79,10 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($id = 0)
     {
-        //
+        $product = Product::find($id);
+        return view('viewProduct', ['product' => $product]);
     }
 
     /**
@@ -82,9 +91,10 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($id = 0)
     {
-        //
+        $product = Product::find($id);
+        return view('editProduct', ['product' => $product]);
     }
 
     /**
@@ -94,9 +104,44 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $id = 0)
     {
-        //
+        $request->validate([
+            'name' => 'required|max:255',
+            'sku' => 'required',
+            'description' => 'required',
+            'price' => 'required',
+            'quantity' => 'required',
+        ]);
+        $product = Product::find($id);
+        try {
+            $img_file_name = NULL;
+            if ($request->hasfile('image')) {
+                $file = $request->file('image');
+                $img_file_name = 'product-image-' . '-' . time() . '.' . $file->extension();
+                $file->move(public_path() . '/storage/product-images/', $img_file_name);
+            }
+            $productData = [
+                'user_id' => Auth::user()->id,
+                'name' => $request->name,
+                'sku' => $request->sku,
+                'description' => $request->description,
+                'price' => $request->price,
+                'quantity' => $request->quantity,
+                'image' => $img_file_name ? env('APP_URL') . 'storage/product-images/' . $img_file_name : $product->image,
+            ];
+            $updateProduct = $product->update($productData);
+            if ($updateProduct) {
+                Session::flash('status', 'Product Updated Successfully!');
+                return redirect('/home');
+            } else {
+                Session::flash('status', 'Something wents wrong!');
+                return redirect()->back();
+            }
+        } catch (\Exception $e) {
+            Session::flash('status', 'Something wents wrong!');
+            return redirect()->back();
+        }
     }
 
     /**
@@ -105,8 +150,46 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($id = 0)
     {
-        //
+        $product = Product::find($id);
+        try {
+            $product->delete();
+            return response()->json([
+                'status' => 200,
+                'message' => 'Deleted Successfully!'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 201,
+                'message' => 'Something went wrong!'
+            ]);
+        }
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function buyProduct(Request $request, $id = 0)
+    {
+        $product = Product::find($id);
+        try {
+            $quantity = $product->quantity - 1;
+            $updateProduct = $product->update(['quantity' => $quantity]);
+            if ($updateProduct) {
+                Session::flash('status', 'Buy Product Successfully!');
+                return redirect()->back();
+            } else {
+                Session::flash('status', 'Something wents wrong!');
+                return redirect()->back();
+            }
+        } catch (\Exception $e) {
+            Session::flash('status', 'Something wents wrong!');
+            return redirect()->back();
+        }
     }
 }
