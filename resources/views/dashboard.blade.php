@@ -27,7 +27,7 @@
                                 <div class="card-body px-4">
                                     <div class="d-flex justify-content-between align-items-center mb-2">
                                         <div class="me-2">
-                                            <div class="display-5 text-white">{{ isset($data['total_user']) ? $data['total_user'] : 0 }}</div>
+                                            <div class="display-5 text-white" id="total_user">{{ isset($data['total_user']) ? $data['total_user'] : 0 }}</div>
                                             <div class="card-text">Total Users</div>
                                         </div>
                                     </div>
@@ -39,7 +39,7 @@
                                 <div class="card-body px-4">
                                     <div class="d-flex justify-content-between align-items-center mb-2">
                                         <div class="me-2">
-                                            <div class="display-5 text-white">{{ isset($data['total_product']) ? $data['total_product'] : 0 }}</div>
+                                            <div class="display-5 text-white" id="total_product">{{ isset($data['total_product']) ? $data['total_product'] : 0 }}</div>
                                             <div class="card-text">Total Product</div>
                                         </div>
                                     </div>
@@ -51,7 +51,7 @@
                                 <div class="card-body px-4">
                                     <div class="d-flex justify-content-between align-items-center mb-2">
                                         <div class="me-2">
-                                            <div class="display-5 text-white">{{ isset($data['total_product_price']) ? $data['total_product_price'] : 0 }}</div>
+                                            <div class="display-5 text-white" id="total_product_price">{{ isset($data['total_product_price']) ? $data['total_product_price'] : 0 }}</div>
                                             <div class="card-text">Total Product Price</div>
                                         </div>
                                     </div>
@@ -63,7 +63,7 @@
                                 <div class="card-body px-4">
                                     <div class="d-flex justify-content-between align-items-center mb-2">
                                         <div class="me-2">
-                                            <div class="display-5 text-white">{{ isset($data['total_inventory']) ? $data['total_inventory'] : 0 }}</div>
+                                            <div class="display-5 text-white" id="total_inventory">{{ isset($data['total_inventory']) ? $data['total_inventory'] : 0 }}</div>
                                             <div class="card-text">Total Product Quantity</div>
                                         </div>
                                     </div>
@@ -94,7 +94,26 @@
         });
 
         // Date picker
-        $( "#datepicker" ).datepicker();
+        $("#datepicker").datepicker().on('change', function(ev) {
+            var date = $(this).val();
+            // alert(firstDate);
+            $.ajax({
+                method: "GET",
+                url: APP_URL + "dashboard/?date=" + date,
+                success: function(res) {
+                    console.log(res);
+                    if (res.status == 200) {
+                        $("#total_user").text(res.data.total_user);
+                        $("#total_product").text(res.data.total_product);
+                        $("#total_product_price").text(res.data.total_product_price);
+                        $("#total_inventory").text(res.data.total_inventory);
+                    }
+                },
+                error: function(err) {
+                    console.log(err);
+                }
+            });
+        });
 
         // Delete Product
         $('.deleteProduct').click(function() {
@@ -139,7 +158,6 @@
                 }
             });
         });
-
     });
 </script>
 @endsection

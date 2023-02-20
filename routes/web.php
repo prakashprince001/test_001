@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -23,12 +24,14 @@ Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-Route::get('/add-product', [App\Http\Controllers\ProductController::class, 'create']);
-Route::post('/add-product', [App\Http\Controllers\ProductController::class, 'store']);
-Route::delete('/delete-product/{id?}', [App\Http\Controllers\ProductController::class, 'destroy']);
-Route::get('/product/{id?}', [App\Http\Controllers\ProductController::class, 'show']);
-Route::get('/edit-product/{id?}', [App\Http\Controllers\ProductController::class, 'edit']);
-Route::post('/update-product/{id?}', [App\Http\Controllers\ProductController::class, 'update']);
+Route::group(['middleware' => 'auth'], function() {
+    Route::get('/add-product', [App\Http\Controllers\ProductController::class, 'create']);
+    Route::post('/add-product', [App\Http\Controllers\ProductController::class, 'store']);
+    Route::delete('/delete-product/{id?}', [App\Http\Controllers\ProductController::class, 'destroy']);
+    Route::get('/product/{id?}', [App\Http\Controllers\ProductController::class, 'show']);
+    Route::get('/edit-product/{id?}', [App\Http\Controllers\ProductController::class, 'edit']);
+    Route::post('/update-product/{id?}', [App\Http\Controllers\ProductController::class, 'update']);
+    Route::get('/dashboard', [App\Http\Controllers\ProductController::class, 'dashboard']);
+});
 Route::get('/buy-product/{id?}', [App\Http\Controllers\ProductController::class, 'buyProduct']);
-Route::get('/dashboard', [App\Http\Controllers\ProductController::class, 'dashboard']);
 

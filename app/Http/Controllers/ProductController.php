@@ -203,14 +203,26 @@ class ProductController extends Controller
      */
     public function dashboard(Request $request)
     {
-        // $date = $request->date;
-        // $created_at = Carbon::createFromFormat('d/m/Y', $date)->format('Y-m-d H:i:s');
-        // $data['total_user'] = User::whereDate('created_at', '=', $created_at)->count();
         $data = [];
-        $data['total_user'] = User::count();
-        $data['total_product'] = Product::count();
-        $data['total_inventory'] = Product::sum('quantity');
-        $data['total_product_price'] = Product::sum('price');
-        return view('dashboard', ['data' => $data]);
+        if ($request->date) {
+            $date = $request->date;
+            $created_at = Carbon::createFromFormat('m/d/Y', $date)->format('Y-m-d');
+            $data['total_user'] = User::whereDate('created_at', '=', $created_at)->count();
+            $data['total_product'] = Product::whereDate('created_at', '=', $created_at)->count();
+            $data['total_inventory'] = Product::whereDate('created_at', '=', $created_at)->sum('quantity');
+            $data['total_product_price'] = Product::whereDate('created_at', '=', $created_at)->sum('price');
+            return response()->json([
+                'status' => 200,
+                'message' => 'Data Fetch Successfully!',
+                'data' => $data
+            ]);
+
+        } else {
+            $data['total_user'] = User::count();
+            $data['total_product'] = Product::count();
+            $data['total_inventory'] = Product::sum('quantity');
+            $data['total_product_price'] = Product::sum('price');
+            return view('dashboard', ['data' => $data]);
+        }
     }
 }
